@@ -1,0 +1,2650 @@
+
+
+
+
+
+
+
+
+    
+
+
+    
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    
+<link href="style.css" rel="stylesheet" type="text/css"/>
+
+
+<script src="/nohighlands/public/jquery-3.6.0.min.js"></script>
+
+<script src="/nohighlands/public/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="style2.css">
+
+<title>Parents at Northern Highlands Regional High School</title>
+
+
+
+    <script type="text/javascript">
+        var newAction = '';
+        function changeDate(date)
+        {
+            document.getElementById('fldDate').className='fieldvaluechanged';
+            location.href = '/nohighlands/parents?tab1=studentdata&tab2=gradebook&tab3=weeklysummary&studentid=24788&mpToView=MP3&action=form&date=' + date;
+        }
+
+        function showAssignmentsByDate(date)
+        {
+            newAction='/nohighlands/parents?tab1=studentdata&tab2=gradebook&tab3=listassignments&studentid=24788&action=form&dateRange=dayof&date=' + date + "&courseAndSection=all";
+            document.frmDate.action = newAction;
+            document.frmDate.submit();
+        }
+
+        function showAssignmentsByMPAndCourse(date,courseAndSection)
+        {
+            var dateRange = 'MP3';
+            
+            newAction='/nohighlands/parents?tab1=studentdata&tab2=gradebook&tab3=listassignments&studentid=24788&action=form&dateRange=' + dateRange +
+                '&date=' + date + '&courseAndSection=' + courseAndSection;
+            document.frmDate.action = newAction;
+            document.frmDate.submit();
+        }
+
+        function searchRecentlyUpdated()
+        {
+            var date = document.getElementById('fldDate').value;
+            var dateRange = '';
+            var courseAndSection = '';
+            var status = 'UPDATED';
+
+            newAction='/nohighlands/parents?tab1=studentdata&tab2=gradebook&tab3=listassignments&studentid=24788&action=form&date=' + date +
+                '&dateRange=' + dateRange + '&courseAndSection=' + courseAndSection + '&status=' + status;
+            document.frmDate.action = newAction;
+
+            document.frmDate.submit();
+        }
+
+        function switchMarkingPeriod(mp)
+        {
+            location.href = '/nohighlands/parents?tab1=studentdata&tab2=gradebook&tab3=weeklysummary&studentid=24788&action=form&mpToView=' + mp;
+        }
+
+        function goToCourseSummary(courseCode, courseSection)
+        {
+            if ('MP3' != 'FG')
+                location.href = '/nohighlands/parents?tab1=studentdata&tab2=gradebook&tab3=coursesummary&studentid=24788&action=form&courseCode=' + courseCode + '&courseSection=' + courseSection + '&mp=MP3';
+        }
+
+    </script>
+</head>
+<body class="parentsBody">
+
+
+
+
+
+
+ <!-- Needed to determine access to certain tabs (conferences, letters) -->
+
+
+
+
+    
+        <script src="https://apis.google.com/js/platform.js" async defer></script>
+        <meta name="google-signin-client_id" content="470216959235-j64lihqe1vceg5fidodsg2cke28p3d66.apps.googleusercontent.com">
+        <script>
+
+            var revokeAllScopes = function() {
+                var auth2 = gapi.auth2.getAuthInstance();
+
+                auth2.disconnect();
+
+                auth2.signOut().then(function () {
+                    window.location.href="view?logout=true";
+                    console.log('User signed out.');
+                });
+            }
+        </script>
+        <div style="margin-top: 15px;display:none" class="g-signin2" data-onsuccess="onSignIn"></div>
+    
+
+
+<script type="text/javascript">
+    function changeStudent(newstudentid)
+    {
+        location.href = document.URL.replace('24788',newstudentid);
+    }
+
+    function header_goToTab(newTab1, appendParams)
+    {
+        if (appendParams == '')
+            location.href='/nohighlands/parents?tab1=' + newTab1 + '&action=form';
+        else
+            location.href='/nohighlands/parents?tab1=' + newTab1 + '&action=form' + '&' + appendParams;
+    }
+
+    function confirmDialog(questionToAsk, okFunction, cancelFunction)
+    {
+        $( "#_dialog-confirm_" ).dialog({
+            resizable: false, height:'auto', width:600, modal: true,
+            title: 'Confirmation',
+            open: function()
+            {
+                $('#_confirmDialogText_').html(questionToAsk);
+            },
+            buttons:
+                {
+                    Ok: function()
+                    {
+                        $( this ).dialog( "close" );
+                        if (okFunction!=null)
+                            okFunction();
+                    },
+                    Cancel: function()
+                    {
+                        $( this ).dialog( "close" );
+                        if (cancelFunction!=null)
+                            cancelFunction();
+                    }
+                }
+        });
+    }
+
+    function alertDialog(alertText, okCallback)
+    {
+        $( "#_dialog-alert_" ).dialog({
+            resizable: false, height:'auto', width:600, modal: true,
+            title: 'Information',
+            open: function()
+            {
+                $('#_confirmAlertText_').html(alertText);
+            },
+            buttons:
+                {
+                    Ok: function()
+                    {
+                        $( this ).dialog( "close" );
+                        if (okCallback)
+                            okCallback();
+                    }
+                }
+        });
+    }
+
+    function promptDialog(questionToAsk, defaultAnswer, okFunction, cancelFunction)
+    {
+        if (defaultAnswer==null) defaultAnswer = '';
+        $( "#_dialog-prompt_" ).dialog({
+            resizable: false, height:'auto', width:600, modal: true,
+            title: 'Prompt',
+            open: function()
+            {
+                $('#_confirmPromptText_').html(questionToAsk);
+                $('#_prompt_dialog_value_').val(defaultAnswer).removeClass('fieldValueChanged').addClass('fieldValue').focus().select();
+            },
+            buttons:
+                {
+                    Ok: function()
+                    {
+                        $( this ).dialog( "close" );
+                        if (okFunction!=null)
+                        {
+                            var __prompt__answer = $('#_prompt_dialog_value_').val();
+                            if (__prompt__answer == null) __prompt__answer = '';
+                            $('#_prompt_dialog_value_').removeClass('fieldValueChanged').addClass('fieldValue');
+                            okFunction(__prompt__answer);
+                        }
+                    },
+                    Cancel: function()
+                    {
+                        $( this ).dialog( "close" );
+                        if (cancelFunction!=null)
+                            cancelFunction();
+                    }
+                }
+        });
+    }
+
+    function confirmDialogWarning(questionToAsk, okFunction, cancelFunction)
+    {
+        confirmDialogDisplay(questionToAsk, okFunction, cancelFunction, true);
+    }
+
+    function confirmDialogDisplay(questionToAsk, okFunction, cancelFunction, useWarningIcon)
+    {
+        $( "#_dialog-confirm_" ).dialog({
+            resizable: false, height:'auto', width:600, modal: true,
+            title: 'Confirmation',
+            open: function()
+            {
+                $('#_confirmDialogText_').html(questionToAsk);
+                if (useWarningIcon)
+                {
+                    $('#_confirmDialogIcon_').attr("src","/nohighlands/images/warning.gif");
+                }
+            },
+            buttons:
+                {
+                    Ok: function()
+                    {
+                        $( this ).dialog( "close" );
+                        if (okFunction!=null)
+                            okFunction();
+                    },
+                    Cancel: function()
+                    {
+                        $( this ).dialog( "close" );
+                        if (cancelFunction!=null)
+                            cancelFunction();
+                    }
+                }
+        });
+    }
+
+    function toggleDisclaimer()
+    {
+        location.href = document.URL + '&toggleDisclaimer=true';
+    }
+
+    function toggleGBDisclaimer()
+    {
+        location.href = document.URL + '&toggleGBDisclaimer=true';
+    }
+
+    function logout()
+    {
+        
+        try
+        {
+            
+            if(gapi && gapi.auth2 && gapi.auth2.getAuthInstance())
+                revokeAllScopes();
+            else
+                
+                location.href='parents?logout=true'
+        }
+        catch (e)
+        {
+            location.href='parents?logout=true'
+        }
+
+    }
+
+    function displayPasswordInReadOnlyTextField(fieldID)
+    {
+        var displayField = document.getElementById('readonly' + fieldID);
+        var hiddenField = document.getElementById(fieldID);
+        if (displayField != null && hiddenField != null)
+        {
+            var displayFieldValue = displayField.innerHTML;
+            if (displayFieldValue.startsWith('****'))
+                displayFieldValue = hiddenField.value;
+            else
+                displayFieldValue = '********';
+        }
+        displayField.innerHTML = displayFieldValue;
+    }
+
+    
+    var revokeAllScopes = function() {
+        try
+        {
+            var auth2 = gapi.auth2.getAuthInstance();
+
+            auth2.disconnect();
+
+            auth2.signOut()
+                .then(() => window.location.href='parents?logout=true')
+                .catch(() => window.location.href='parents?logout=true');
+        }
+        catch (e)
+        {
+            window.location.href="view?logout=true";
+        }
+    }
+    
+</script>
+<!-- Start of Header-->
+
+
+<div class="headerModules">
+    <div style="text-align: left; float:left; white-space: nowrap; ">
+        <span style="font-size:18pt; font-weight: 600; text-transform: none; text-wrap: none; margin-left:28px;margin-top: 2px; ">
+            <img src="/nohighlands/images/genesis-logo405x103.png" alt="Genesis" style="height:40px; margin-left:5px; vertical-align: bottom;margin-top: 4px;margin-right: 7px;" align="left">
+            <br/>
+            
+            
+                Student Resources
+            
+        </span>
+    </div>
+    <div style="text-align: right; white-space: nowrap">
+
+        
+        <td>
+            
+                
+                    
+                
+            
+                
+                    
+                        
+
+                        
+                            
+                            
+                            
+                        
+                        
+
+                        
+                        <span  class="headerModuleTabSelected" onclick="header_goToTab('studentdata','studentid=24788');">
+                            <img src="/nohighlands/parents/images/buttons/students_white.png" alt="" style="vertical-align: bottom"/>
+                            Student Data
+                            
+                            
+                                
+                            
+                        </span>
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                        
+
+                        
+                        
+                            
+                            
+                        
+
+                        
+                        <span  class="headerModuleTab" onclick="header_goToTab('setup','studentid=24788');">
+                            <img src="/nohighlands/parents/images/buttons/settings_blue.png" alt="" style="vertical-align: bottom"/>
+                            Settings
+                            
+                            
+                                
+                            
+                        </span>
+                    
+                
+            
+        </td>
+
+        <span class="headerModuleTab" onclick="logout();">
+            <img src="/nohighlands/parents/images/buttons/lock_blue.png" alt="" style="vertical-align: bottom"/>
+            Logout
+        </span>
+        &nbsp;
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="headerCategories">
+    <div class="headerCategories" style="height:15px;">&nbsp;</div>
+
+    
+        
+            
+                
+                    
+
+                    
+                    
+                        
+                    
+
+                    
+                    
+                        <span class="headerCategoryTab" onclick="header_goToTab('studentdata&tab2=studentsummary','studentid=24788');">
+                            Summary
+                        </span>
+                    
+
+                
+            
+        
+            
+                
+                    
+
+                    
+                    
+                        
+                    
+
+                    
+                    
+                        <span class="headerCategoryTab" onclick="header_goToTab('studentdata&tab2=assessments','studentid=24788');">
+                            Assessments
+                        </span>
+                    
+
+                
+            
+        
+            
+                
+                    
+
+                    
+                    
+                        
+                    
+
+                    
+                    
+                        <span class="headerCategoryTab" onclick="header_goToTab('studentdata&tab2=attendance','studentid=24788');">
+                            Attendance
+                        </span>
+                    
+
+                
+            
+        
+            
+                
+                    
+
+                    
+                    
+                        
+                    
+
+                    
+                    
+                        <span class="headerCategoryTab" onclick="header_goToTab('studentdata&tab2=grading','studentid=24788');">
+                            Grading
+                        </span>
+                    
+
+                
+            
+        
+            
+                
+                    
+
+                    
+                    
+                        
+                    
+
+                    
+                    
+                        <span class="headerCategoryTab" onclick="header_goToTab('studentdata&tab2=feesAndFines','studentid=24788');">
+                            Fees And Fines
+                        </span>
+                    
+
+                
+            
+        
+            
+                
+                    
+
+                    
+                        
+                        
+                    
+                    
+
+                    
+                    
+                        <span class="headerCategoryTabSelected" onclick="header_goToTab('studentdata&tab2=gradebook','studentid=24788');">
+                            Gradebook
+                        </span>
+                    
+
+                
+            
+        
+            
+                
+                    
+
+                    
+                    
+                        
+                    
+
+                    
+                    
+                        <span class="headerCategoryTab" onclick="header_goToTab('studentdata&tab2=documents','studentid=24788');">
+                            Documents
+                        </span>
+                    
+
+                
+            
+        
+            
+                
+                    
+
+                    
+                    
+                        
+                    
+
+                    
+                    
+                        <span class="headerCategoryTab" onclick="header_goToTab('studentdata&tab2=forms','studentid=24788');">
+                            Forms
+                        </span>
+                    
+
+                
+            
+        
+            
+                
+                    
+
+                    
+                    
+                        
+                    
+
+                    
+                    
+                        <span class="headerCategoryTab" onclick="header_goToTab('studentdata&tab2=conferences','studentid=24788');">
+                            Conferences
+                        </span>
+                    
+
+                
+            
+        
+            
+                
+                    
+
+                    
+                    
+                        
+                    
+
+                    
+                    
+                        <span class="headerCategoryTab" onclick="header_goToTab('studentdata&tab2=letters','studentid=24788');">
+                            Letters
+                        </span>
+                    
+
+                
+            
+        
+            
+                
+                    
+
+                    
+                    
+                        
+                    
+
+                    
+                    
+                        <span class="headerCategoryTab" onclick="header_goToTab('studentdata&tab2=school','studentid=24788');">
+                            School Information
+                        </span>
+                    
+
+                
+            
+        
+    
+</div>
+
+
+    <div class="headerStudentSelector">
+        <div class="headerStudentSelector" style="height:11px;">&nbsp;</div>
+        <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+                <td width="50%" style="font-size: 2.4em;font-weight: 300; margin-top: 8px;">
+                    
+                </td>
+
+                <td width="50%">
+                    <label for="fldStudent" style="text-transform: uppercase;">Select Student:</label>
+                    <select name="fldStudent" id="fldStudent" class="headerStudentSelectorInput" onchange="changeStudent(this.value);">
+                        
+                            <option value="24788" selected>Pogodin, Daniel</option>
+                        
+                    </select>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+
+
+    <br>
+    <div class="studentTabBar">
+    
+        
+            
+                
+
+                
+                    
+                    
+                
+                
+
+                
+                
+                    <span class="studentTabSelected" onclick="header_goToTab('studentdata&tab2=gradebook&tab3=weeklysummary','studentid=24788');">
+                        Weekly Summary
+                    </span>
+                
+
+            
+        
+    
+        
+            
+                
+
+                
+                
+                    
+                
+
+                
+                
+                    <span class="studentTab" onclick="header_goToTab('studentdata&tab2=gradebook&tab3=listassignments','studentid=24788');">
+                        List Assignments
+                    </span>
+                
+
+            
+        
+    
+        
+            
+                
+
+                
+                
+                    
+                
+
+                
+                
+                    <span class="studentTab" onclick="header_goToTab('studentdata&tab2=gradebook&tab3=coursesummary','studentid=24788');">
+                        Course Summary
+                    </span>
+                
+
+            
+        
+    
+        
+            
+        
+    
+    </div>
+
+
+
+
+
+
+
+    <div style="background-color:#FFFC97;color:#800000;font-size:.8em; font-weight:600; border-bottom:solid 1pt #000000;border-top: solid 1pt #000000; padding: 2pt 5pt;">
+        
+            <b><center><br>All Appeal Forms for current 9th,10th & 11th graders who are appealing a course placement for the 22-23 school year were due Wednesday, April 6, 2022. The deadline has now passed.
+            <br>
+        
+    </div>
+
+
+
+
+
+
+    <div style="min-width: 100px; max-width: 800px; margin: auto;">
+        <div style="text-align: right; padding: 5px 5px 0 0;">
+           <span onclick="toggleGBDisclaimer();" style="cursor: pointer; color: blue; font-size: 8pt;">
+               Hide Message
+               
+           </span>
+        </div>
+        <div style="border: 1px solid #dadada; background-color: #dbf4fe; padding: 2px 8px 2px 8px;"><p>Genesis Gradebook Module is closed during the school day from 7:45 AM to 2:36 PM.</p></div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div style="height: 10px;"></div>
+
+
+
+
+
+<script>
+    function _toggleFormCheckBox(id, flipChecked)
+    {
+        var checkbox = document.getElementById(id);
+        var image = document.getElementById(id + "Img");
+        var parent = checkbox.parentElement;
+        if(flipChecked)
+        {
+            checkbox.checked = !checkbox.checked;
+        }
+        if(checkbox)
+        {
+            checkbox.checked = !checkbox.checked;
+            image.className = checkbox.checked ? '' : 'hideImage';
+            parent.className = checkbox.checked ? 'formCheckbox checked' : 'formCheckbox';
+        }
+
+        checkbox.onchange();
+    }
+</script>
+
+
+
+
+        
+     <table role="main" aria-label=" + m_title + " class="notecard" style=""><tr><td class="notecardTitle"> </td></tr><tr><td>
+
+        
+
+        
+            
+            
+
+                <p class="sectionTitle">Pogodin, Daniel</p>
+
+                <form name="frmDate" method="post" target="_top" action="">
+                    <p style="text-align: center">
+                        <span onclick="changeDate('03/28/2022');" style="cursor: pointer;">&lt;&lt;</span>
+                        &nbsp;
+                        <select name="fldDate" id="fldDate" onchange="changeDate(this.value);" class="fieldvalue">
+                            
+                                <option value="08/30/2021" >Week of 08/30/2021 </option>
+                            
+                                <option value="09/06/2021" >Week of 09/06/2021 </option>
+                            
+                                <option value="09/13/2021" >Week of 09/13/2021 </option>
+                            
+                                <option value="09/20/2021" >Week of 09/20/2021 </option>
+                            
+                                <option value="09/27/2021" >Week of 09/27/2021 </option>
+                            
+                                <option value="10/04/2021" >Week of 10/04/2021 </option>
+                            
+                                <option value="10/11/2021" >Week of 10/11/2021 </option>
+                            
+                                <option value="10/18/2021" >Week of 10/18/2021 </option>
+                            
+                                <option value="10/25/2021" >Week of 10/25/2021 </option>
+                            
+                                <option value="11/01/2021" >Week of 11/01/2021 </option>
+                            
+                                <option value="11/08/2021" >Week of 11/08/2021 </option>
+                            
+                                <option value="11/15/2021" >Week of 11/15/2021 </option>
+                            
+                                <option value="11/22/2021" >Week of 11/22/2021 </option>
+                            
+                                <option value="11/29/2021" >Week of 11/29/2021 </option>
+                            
+                                <option value="12/06/2021" >Week of 12/06/2021 </option>
+                            
+                                <option value="12/13/2021" >Week of 12/13/2021 </option>
+                            
+                                <option value="12/20/2021" >Week of 12/20/2021 </option>
+                            
+                                <option value="12/27/2021" >Week of 12/27/2021 </option>
+                            
+                                <option value="01/03/2022" >Week of 01/03/2022 </option>
+                            
+                                <option value="01/10/2022" >Week of 01/10/2022 </option>
+                            
+                                <option value="01/17/2022" >Week of 01/17/2022 </option>
+                            
+                                <option value="01/24/2022" >Week of 01/24/2022 </option>
+                            
+                                <option value="01/31/2022" >Week of 01/31/2022 </option>
+                            
+                                <option value="02/07/2022" >Week of 02/07/2022 </option>
+                            
+                                <option value="02/14/2022" >Week of 02/14/2022 </option>
+                            
+                                <option value="02/21/2022" >Week of 02/21/2022 </option>
+                            
+                                <option value="02/28/2022" >Week of 02/28/2022 </option>
+                            
+                                <option value="03/07/2022" >Week of 03/07/2022 </option>
+                            
+                                <option value="03/14/2022" >Week of 03/14/2022 </option>
+                            
+                                <option value="03/21/2022" >Week of 03/21/2022 </option>
+                            
+                                <option value="03/28/2022" >Week of 03/28/2022 </option>
+                            
+                                <option value="04/04/2022" selected>Week of 04/04/2022 (Current)</option>
+                            
+                                <option value="04/11/2022" >Week of 04/11/2022 </option>
+                            
+                                <option value="04/18/2022" >Week of 04/18/2022 </option>
+                            
+                                <option value="04/25/2022" >Week of 04/25/2022 </option>
+                            
+                                <option value="05/02/2022" >Week of 05/02/2022 </option>
+                            
+                                <option value="05/09/2022" >Week of 05/09/2022 </option>
+                            
+                                <option value="05/16/2022" >Week of 05/16/2022 </option>
+                            
+                                <option value="05/23/2022" >Week of 05/23/2022 </option>
+                            
+                                <option value="05/30/2022" >Week of 05/30/2022 </option>
+                            
+                                <option value="06/06/2022" >Week of 06/06/2022 </option>
+                            
+                                <option value="06/13/2022" >Week of 06/13/2022 </option>
+                            
+                        </select>
+                        &nbsp;
+                        <span onclick="changeDate('04/11/2022');" style="cursor: pointer;">&gt;&gt;</span>
+                    </p>
+                </form>
+
+                
+
+                <p style="text-align: center;">
+                    <img src="/nohighlands/parents/images/buttons/blueAdobe.png" style="width:24px;">
+                    <a target="_blank" href="/nohighlands/parents?tab1=studentdata&tab2=gradebook&tab3=weeklysummary&studentid=24788&action=print&dateRange=weekof&date=04/04/2022&mpToView=MP3">
+                        Printable Version of Weekly Assignment List
+                    </a>
+                </p>
+            
+
+                <table class="list" border="0">
+
+                    <tr class="listheading">
+                        <td nowrap class="cellLeft">Courses</td>
+                        <td nowrap class="cellLeft">Teacher</td>
+                        
+                        
+                            <td class="cellCenter">
+                                <select name="fldMarkingPeriod" class="fieldvalue" onchange="switchMarkingPeriod(this.value);">
+                                    
+                                        <option value="MP1" >MP1 </option>
+                                    
+                                        <option value="MP2" >MP2 </option>
+                                    
+                                        <option value="MP3" selected>MP3 </option>
+                                    
+                                </select>
+                                Avg
+                            </td>
+                        
+                        
+                            
+                                <td class="cellCenter" style="cursor:pointer" onclick="showAssignmentsByDate('4/4/2022');" title="View Assignments Due on 4/4/2022">
+                                    <span style="text-decoration: underline">Mon</span><br/>
+                                    <span style="font-weight:normal">4/4/22</span>
+                                    
+                                </td>
+                            
+                                <td class="cellCenter" style="cursor:pointer" onclick="showAssignmentsByDate('4/5/2022');" title="View Assignments Due on 4/5/2022">
+                                    <span style="text-decoration: underline">Tue</span><br/>
+                                    <span style="font-weight:normal">4/5/22</span>
+                                    
+                                </td>
+                            
+                                <td class="cellCenter" style="cursor:pointer" onclick="showAssignmentsByDate('4/6/2022');" title="View Assignments Due on 4/6/2022">
+                                    <span style="text-decoration: underline">Wed</span><br/>
+                                    <span style="font-weight:normal">4/6/22</span>
+                                    
+                                </td>
+                            
+                                <td class="cellCenter" style="cursor:pointer" onclick="showAssignmentsByDate('4/7/2022');" title="View Assignments Due on 4/7/2022">
+                                    <span style="text-decoration: underline">Thu</span><br/>
+                                    <span style="font-weight:normal">4/7/22</span>
+                                    
+                                </td>
+                            
+                                <td class="cellCenter" style="cursor:pointer" onclick="showAssignmentsByDate('4/8/2022');" title="View Assignments Due on 4/8/2022">
+                                    <span style="text-decoration: underline">Fri</span><br/>
+                                    <span style="font-weight:normal">4/8/22</span>
+                                    
+                                </td>
+                            
+                        
+                    </tr>
+
+                    
+                    
+
+                    
+
+                        
+                        
+                        
+                        
+
+                        
+                        
+
+                        
+
+                        
+
+                            
+                            
+                            
+                            
+
+                            
+                            
+                            
+                            <tr class="listrowodd">
+                                <td class="cellLeft" nowrap>
+                                        
+                                        <span class="categorytab" title="Display Assignments for American Literature" onclick="showAssignmentsByMPAndCourse('04/04/2022','174:1');">
+                                            <font color="#0000ff"><u>
+                                        
+                                            
+                                             American Literature 
+                                        
+                                            </u></font>
+                                        </span>
+                                        
+                                </td>
+                                <td class="cellLeft" nowrap>
+                                    
+                                    
+                                    
+                                    
+                                        
+                                        
+                                        
+                                            
+                                            
+                                                
+                                                
+                                                    
+                                                        
+                                                            
+                                                            
+                                                        
+                                                    
+                                                    
+                                                
+                                                    
+                                                        
+                                                            
+                                                            
+                                                        
+                                                    
+                                                    
+                                                
+                                            
+                                        
+                                        Rokoszak/Zungoli
+                                        
+                                            
+                                            
+                                                
+                                                
+                                                    
+                                                        
+                                                        
+                                                    
+                                                
+                                                    
+                                                        
+                                                        
+                                                    
+                                                
+                                            
+                                            <br>
+                                            
+                                                <b>Email:</b>
+                                                <a href="mailto:rokoszakl@northernhighlands.org;zungolim@northernhighlands.org;" style="text-decoration:none"><img src="/nohighlands/images/labelIcon.png" alt="" border="0" title="Send e-mail to teacher"></a>
+                                            
+                                        
+                                    
+                                </td>
+                                
+                                
+                                    <td class="cellRight" style="cursor:pointer;">
+                                        
+                                        
+                                        
+                                        
+                                        
+
+                                        
+                                        
+                                        
+                                        
+                                        
+
+                                        
+                                        
+
+                                        
+                                        
+                                        
+
+                                        
+                                        
+                                        
+                                             
+                                        <table cellpadding="0" cellspacing="0" width="100%">
+                                            <tr>
+                                                
+                                                
+                                                    
+                                                    
+                                                        
+                                                        
+                                                            
+                                                            <td width="70%" class="cellRight" style="border:0;color:#0066CC;" title="View Course Summary" onclick="goToCourseSummary('174','1');">
+                                                                
+                                                                    <div style="text-decoration: underline">
+                                                                        
+                                                                        82.5%
+                                                                        
+                                                                    </div>
+                                                                
+                                                            </td>
+                                                            <td width="30%" class="cellRight" style="border:0;" onclick="goToCourseSummary('174','1');">
+                                                                
+                                                                    B
+                                                                
+                                                            </td>
+                                                        
+                                                        
+                                                        
+                                                    
+                                                
+                                            </tr>
+                                        </table>
+                                    </td>
+                                
+                                
+                                
+                                
+                                    
+                                    
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="1 Assignments Due" style="cursor:help;font-weight: bold;">
+                                            
+                                            
+                                                <a style="color:#0066CC; font-weight: bold;" href="parents?tab1=studentdata&tab2=gradebook&tab3=listassignments&studentid=24788&action=form&date=04/04/2022&dateRange=weekof&courseAndSection=174:1">1</a>
+                                            
+                                        </td>
+                                    
+                                
+
+                            </tr>
+
+                            
+                            
+                        
+
+                        
+
+                    
+
+                        
+                        
+                        
+                        
+
+                        
+                        
+
+                        
+
+                        
+
+                            
+                            
+                            
+                            
+
+                            
+                            
+                            
+                            <tr class="listroweven">
+                                <td class="cellLeft" nowrap>
+                                        
+                                        <span class="categorytab" title="Display Assignments for Broadcast Television" onclick="showAssignmentsByMPAndCourse('04/04/2022','195:1');">
+                                            <font color="#0000ff"><u>
+                                        
+                                            
+                                             Broadcast Television 
+                                        
+                                            </u></font>
+                                        </span>
+                                        
+                                </td>
+                                <td class="cellLeft" nowrap>
+                                    
+                                    
+                                    
+                                    
+                                        
+                                        
+                                        
+                                            
+                                            
+                                        
+                                        Nadal, Justin
+                                        
+                                            
+                                            
+                                                
+                                                
+                                                    
+                                                        
+                                                        
+                                                    
+                                                
+                                            
+                                            <br>
+                                            
+                                                <b>Email:</b>
+                                                <a href="mailto:nadalj@northernhighlands.org" style="text-decoration:none"><img src="/nohighlands/images/labelIcon.png" alt="" border="0" title="Send e-mail to teacher"></a>
+                                            
+                                        
+                                    
+                                </td>
+                                
+                                
+                                    <td class="cellRight" style="cursor:pointer;">
+                                        
+                                        
+                                        
+                                        
+                                        
+
+                                        
+                                        
+                                        
+                                        
+                                        
+
+                                        
+                                        
+
+                                        
+                                        
+                                        
+
+                                        
+                                        
+                                        
+                                             
+                                        <table cellpadding="0" cellspacing="0" width="100%">
+                                            <tr>
+                                                
+                                                
+                                                    
+                                                    
+                                                        
+                                                        
+                                                            
+                                                            <td width="70%" class="cellRight" style="border:0;color:#0066CC;" title="View Course Summary" onclick="goToCourseSummary('195','1');">
+                                                                
+                                                                    <div style="text-decoration: underline">
+                                                                        
+                                                                        91.7%
+                                                                        
+                                                                    </div>
+                                                                
+                                                            </td>
+                                                            <td width="30%" class="cellRight" style="border:0;" onclick="goToCourseSummary('195','1');">
+                                                                
+                                                                    A-
+                                                                
+                                                            </td>
+                                                        
+                                                        
+                                                        
+                                                    
+                                                
+                                            </tr>
+                                        </table>
+                                    </td>
+                                
+                                
+                                
+                                
+                                    
+                                    
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="1 Assignments Due" style="cursor:help;font-weight: bold;">
+                                            
+                                            
+                                                <a style="color:#0066CC; font-weight: bold;" href="parents?tab1=studentdata&tab2=gradebook&tab3=listassignments&studentid=24788&action=form&date=04/04/2022&dateRange=weekof&courseAndSection=195:1">1</a>
+                                            
+                                        </td>
+                                    
+                                
+
+                            </tr>
+
+                            
+                            
+                        
+
+                        
+
+                    
+
+                        
+                        
+                        
+                        
+
+                        
+                        
+
+                        
+
+                        
+
+                            
+                            
+                            
+                            
+
+                            
+                            
+                            
+                            <tr class="listrowodd">
+                                <td class="cellLeft" nowrap>
+                                        
+                                        <span class="categorytab" title="Display Assignments for United States History I" onclick="showAssignmentsByMPAndCourse('04/04/2022','209:1');">
+                                            <font color="#0000ff"><u>
+                                        
+                                            
+                                             United States History I 
+                                        
+                                            </u></font>
+                                        </span>
+                                        
+                                </td>
+                                <td class="cellLeft" nowrap>
+                                    
+                                    
+                                    
+                                    
+                                        
+                                        
+                                        
+                                            
+                                            
+                                                
+                                                
+                                                    
+                                                        
+                                                            
+                                                            
+                                                        
+                                                    
+                                                    
+                                                
+                                                    
+                                                        
+                                                            
+                                                            
+                                                        
+                                                    
+                                                    
+                                                
+                                            
+                                        
+                                        Wengerter/Bellavance
+                                        
+                                            
+                                            
+                                                
+                                                
+                                                    
+                                                        
+                                                        
+                                                    
+                                                
+                                                    
+                                                        
+                                                        
+                                                    
+                                                
+                                            
+                                            <br>
+                                            
+                                                <b>Email:</b>
+                                                <a href="mailto:wengerterk@northernhighlands.org;bellavancec@northernhighlands.org;" style="text-decoration:none"><img src="/nohighlands/images/labelIcon.png" alt="" border="0" title="Send e-mail to teacher"></a>
+                                            
+                                        
+                                    
+                                </td>
+                                
+                                
+                                    <td class="cellRight" style="cursor:pointer;">
+                                        
+                                        
+                                        
+                                        
+                                        
+
+                                        
+                                        
+                                        
+                                        
+                                        
+
+                                        
+                                        
+
+                                        
+                                        
+                                        
+
+                                        
+                                        
+                                        
+                                             
+                                        <table cellpadding="0" cellspacing="0" width="100%">
+                                            <tr>
+                                                
+                                                
+                                                    
+                                                    
+                                                        
+                                                        
+                                                            
+                                                            <td width="70%" class="cellRight" style="border:0;color:#0066CC;" title="View Course Summary" onclick="goToCourseSummary('209','1');">
+                                                                
+                                                                    <div style="text-decoration: underline">
+                                                                        
+                                                                        88.4%
+                                                                        
+                                                                    </div>
+                                                                
+                                                            </td>
+                                                            <td width="30%" class="cellRight" style="border:0;" onclick="goToCourseSummary('209','1');">
+                                                                
+                                                                    B+
+                                                                
+                                                            </td>
+                                                        
+                                                        
+                                                        
+                                                    
+                                                
+                                            </tr>
+                                        </table>
+                                    </td>
+                                
+                                
+                                
+                                
+                                    
+                                    
+                                        
+                                        
+                                        <td class="cellCenter" title="1 Assignments Due" style="cursor:help;font-weight: bold;">
+                                            
+                                            
+                                                <a style="color:#0066CC; font-weight: bold;" href="parents?tab1=studentdata&tab2=gradebook&tab3=listassignments&studentid=24788&action=form&date=04/04/2022&dateRange=weekof&courseAndSection=209:1">1</a>
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                    
+                                
+
+                            </tr>
+
+                            
+                            
+                        
+
+                        
+
+                    
+
+                        
+                        
+                        
+                        
+
+                        
+                        
+
+                        
+
+                        
+
+                            
+                            
+                            
+                            
+
+                            
+                            
+                            
+                            <tr class="listroweven">
+                                <td class="cellLeft" nowrap>
+                                        
+                                        <span class="categorytab" title="Display Assignments for Algebra II/Trigonometry" onclick="showAssignmentsByMPAndCourse('04/04/2022','332:6');">
+                                            <font color="#0000ff"><u>
+                                        
+                                            
+                                             Algebra II/Trigonometry 
+                                        
+                                            </u></font>
+                                        </span>
+                                        
+                                </td>
+                                <td class="cellLeft" nowrap>
+                                    
+                                    
+                                    
+                                    
+                                        
+                                        
+                                        
+                                            
+                                            
+                                                
+                                                
+                                                    
+                                                        
+                                                            
+                                                            
+                                                        
+                                                    
+                                                    
+                                                
+                                                    
+                                                        
+                                                            
+                                                            
+                                                        
+                                                    
+                                                    
+                                                
+                                            
+                                        
+                                        Bradley/Rayside
+                                        
+                                            
+                                            
+                                                
+                                                
+                                                    
+                                                        
+                                                        
+                                                    
+                                                
+                                                    
+                                                        
+                                                        
+                                                    
+                                                
+                                            
+                                            <br>
+                                            
+                                                <b>Email:</b>
+                                                <a href="mailto:bradleyl@northernhighlands.org;raysided@northernhighlands.org;" style="text-decoration:none"><img src="/nohighlands/images/labelIcon.png" alt="" border="0" title="Send e-mail to teacher"></a>
+                                            
+                                        
+                                    
+                                </td>
+                                
+                                
+                                    <td class="cellRight" style="cursor:pointer;">
+                                        
+                                        
+                                        
+                                        
+                                        
+
+                                        
+                                        
+                                        
+                                        
+                                        
+
+                                        
+                                        
+
+                                        
+                                        
+                                        
+
+                                        
+                                        
+                                        
+                                             
+                                        <table cellpadding="0" cellspacing="0" width="100%">
+                                            <tr>
+                                                
+                                                
+                                                    
+                                                    
+                                                        
+                                                        
+                                                            
+                                                            <td width="70%" class="cellRight" style="border:0;color:#0066CC;" title="View Course Summary" onclick="goToCourseSummary('332','6');">
+                                                                
+                                                                    <div style="text-decoration: underline">
+                                                                        
+                                                                        86.3%
+                                                                        
+                                                                    </div>
+                                                                
+                                                            </td>
+                                                            <td width="30%" class="cellRight" style="border:0;" onclick="goToCourseSummary('332','6');">
+                                                                
+                                                                    B+
+                                                                
+                                                            </td>
+                                                        
+                                                        
+                                                        
+                                                    
+                                                
+                                            </tr>
+                                        </table>
+                                    </td>
+                                
+                                
+                                
+                                
+                                    
+                                    
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                    
+                                
+
+                            </tr>
+
+                            
+                            
+                        
+
+                        
+
+                    
+
+                        
+                        
+                        
+                        
+
+                        
+                        
+
+                        
+
+                        
+
+                            
+                            
+                            
+                            
+
+                            
+                            
+                            
+                            <tr class="listrowodd">
+                                <td class="cellLeft" nowrap>
+                                        
+                                        <span class="categorytab" title="Display Assignments for Chemistry/Lab" onclick="showAssignmentsByMPAndCourse('04/04/2022','422:3');">
+                                            <font color="#0000ff"><u>
+                                        
+                                            
+                                             Chemistry/Lab 
+                                        
+                                            </u></font>
+                                        </span>
+                                        
+                                </td>
+                                <td class="cellLeft" nowrap>
+                                    
+                                    
+                                    
+                                    
+                                        
+                                        
+                                        
+                                            
+                                            
+                                        
+                                        Nelson, Jaclyn
+                                        
+                                            
+                                            
+                                                
+                                                
+                                                    
+                                                        
+                                                        
+                                                    
+                                                
+                                            
+                                            <br>
+                                            
+                                                <b>Email:</b>
+                                                <a href="mailto:nelsonj@northernhighlands.org" style="text-decoration:none"><img src="/nohighlands/images/labelIcon.png" alt="" border="0" title="Send e-mail to teacher"></a>
+                                            
+                                        
+                                    
+                                </td>
+                                
+                                
+                                    <td class="cellRight" style="cursor:pointer;">
+                                        
+                                        
+                                        
+                                        
+                                        
+
+                                        
+                                        
+                                        
+                                        
+                                        
+
+                                        
+                                        
+
+                                        
+                                        
+                                        
+
+                                        
+                                        
+                                        
+                                             
+                                        <table cellpadding="0" cellspacing="0" width="100%">
+                                            <tr>
+                                                
+                                                
+                                                    
+                                                    
+                                                        
+                                                        
+                                                            
+                                                            <td width="70%" class="cellRight" style="border:0;color:#0066CC;" title="View Course Summary" onclick="goToCourseSummary('422','3');">
+                                                                
+                                                                    <div style="text-decoration: underline">
+                                                                        
+                                                                        82.6%
+                                                                        
+                                                                    </div>
+                                                                
+                                                            </td>
+                                                            <td width="30%" class="cellRight" style="border:0;" onclick="goToCourseSummary('422','3');">
+                                                                
+                                                                    B-
+                                                                
+                                                            </td>
+                                                        
+                                                        
+                                                        
+                                                    
+                                                
+                                            </tr>
+                                        </table>
+                                    </td>
+                                
+                                
+                                
+                                
+                                    
+                                    
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="1 Assignments Due" style="cursor:help;font-weight: bold;">
+                                            
+                                            
+                                                <a style="color:#0066CC; font-weight: bold;" href="parents?tab1=studentdata&tab2=gradebook&tab3=listassignments&studentid=24788&action=form&date=04/04/2022&dateRange=weekof&courseAndSection=422:3">1</a>
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                    
+                                
+
+                            </tr>
+
+                            
+                            
+                        
+
+                        
+
+                    
+
+                        
+                        
+                        
+                        
+
+                        
+                        
+
+                        
+
+                        
+
+                            
+                            
+                            
+                            
+
+                            
+                            
+                            
+                            <tr class="listroweven">
+                                <td class="cellLeft" nowrap>
+                                        
+                                        <span class="categorytab" title="Display Assignments for French III" onclick="showAssignmentsByMPAndCourse('04/04/2022','513:1');">
+                                            <font color="#0000ff"><u>
+                                        
+                                            
+                                             French III 
+                                        
+                                            </u></font>
+                                        </span>
+                                        
+                                </td>
+                                <td class="cellLeft" nowrap>
+                                    
+                                    
+                                    
+                                    
+                                        
+                                        
+                                        
+                                            
+                                            
+                                        
+                                        Sandt, Axelle
+                                        
+                                            
+                                            
+                                                
+                                                
+                                                    
+                                                        
+                                                        
+                                                    
+                                                
+                                            
+                                            <br>
+                                            
+                                                <b>Email:</b>
+                                                <a href="mailto:sandta@northernhighlands.org" style="text-decoration:none"><img src="/nohighlands/images/labelIcon.png" alt="" border="0" title="Send e-mail to teacher"></a>
+                                            
+                                        
+                                    
+                                </td>
+                                
+                                
+                                    <td class="cellRight" style="cursor:pointer;">
+                                        
+                                        
+                                        
+                                        
+                                        
+
+                                        
+                                        
+                                        
+                                        
+                                        
+
+                                        
+                                        
+
+                                        
+                                        
+                                        
+
+                                        
+                                        
+                                        
+                                             
+                                        <table cellpadding="0" cellspacing="0" width="100%">
+                                            <tr>
+                                                
+                                                
+                                                    
+                                                    
+                                                        
+                                                        
+                                                            
+                                                            <td width="70%" class="cellRight" style="border:0;color:#0066CC;" title="View Course Summary" onclick="goToCourseSummary('513','1');">
+                                                                
+                                                                    <div style="text-decoration: underline">
+                                                                        
+                                                                        84.7%
+                                                                        
+                                                                    </div>
+                                                                
+                                                            </td>
+                                                            <td width="30%" class="cellRight" style="border:0;" onclick="goToCourseSummary('513','1');">
+                                                                
+                                                                    B
+                                                                
+                                                            </td>
+                                                        
+                                                        
+                                                        
+                                                    
+                                                
+                                            </tr>
+                                        </table>
+                                    </td>
+                                
+                                
+                                
+                                
+                                    
+                                    
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="2 Assignments Due" style="cursor:help;font-weight: bold;">
+                                            
+                                            
+                                                <a style="color:#0066CC; font-weight: bold;" href="parents?tab1=studentdata&tab2=gradebook&tab3=listassignments&studentid=24788&action=form&date=04/04/2022&dateRange=weekof&courseAndSection=513:1">2</a>
+                                            
+                                        </td>
+                                    
+                                
+
+                            </tr>
+
+                            
+                            
+                        
+
+                        
+
+                    
+
+                        
+                        
+                        
+                        
+
+                        
+                        
+
+                        
+
+                        
+
+                            
+                            
+                            
+                            
+
+                            
+                            
+                            
+                            <tr class="listrowodd">
+                                <td class="cellLeft" nowrap>
+                                        
+                                        <span class="categorytab" title="Display Assignments for Honors Computer Science: JAVA" onclick="showAssignmentsByMPAndCourse('04/04/2022','654:2');">
+                                            <font color="#0000ff"><u>
+                                        
+                                            
+                                             Honors Computer Science: JAVA 
+                                        
+                                            </u></font>
+                                        </span>
+                                        
+                                </td>
+                                <td class="cellLeft" nowrap>
+                                    
+                                    
+                                    
+                                    
+                                        
+                                        
+                                        
+                                            
+                                            
+                                        
+                                        Howe, Alexandra
+                                        
+                                            
+                                            
+                                                
+                                                
+                                                    
+                                                        
+                                                        
+                                                    
+                                                
+                                            
+                                            <br>
+                                            
+                                                <b>Email:</b>
+                                                <a href="mailto:howea@northernhighlands.org" style="text-decoration:none"><img src="/nohighlands/images/labelIcon.png" alt="" border="0" title="Send e-mail to teacher"></a>
+                                            
+                                        
+                                    
+                                </td>
+                                
+                                
+                                    <td class="cellRight" style="cursor:pointer;">
+                                        
+                                        
+                                        
+                                        
+                                        
+
+                                        
+                                        
+                                        
+                                        
+                                        
+
+                                        
+                                        
+
+                                        
+                                        
+                                        
+
+                                        
+                                        
+                                        
+                                             
+                                        <table cellpadding="0" cellspacing="0" width="100%">
+                                            <tr>
+                                                
+                                                
+                                                    
+                                                    
+                                                        
+                                                        
+                                                            
+                                                            <td width="70%" class="cellRight" style="border:0;color:#0066CC;" title="View Course Summary" onclick="goToCourseSummary('654','2');">
+                                                                
+                                                                    <div style="text-decoration: underline">
+                                                                        
+                                                                        94.4%
+                                                                        
+                                                                    </div>
+                                                                
+                                                            </td>
+                                                            <td width="30%" class="cellRight" style="border:0;" onclick="goToCourseSummary('654','2');">
+                                                                
+                                                                    A
+                                                                
+                                                            </td>
+                                                        
+                                                        
+                                                        
+                                                    
+                                                
+                                            </tr>
+                                        </table>
+                                    </td>
+                                
+                                
+                                
+                                
+                                    
+                                    
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="1 Assignments Due" style="cursor:help;font-weight: bold;">
+                                            
+                                            
+                                                <a style="color:#0066CC; font-weight: bold;" href="parents?tab1=studentdata&tab2=gradebook&tab3=listassignments&studentid=24788&action=form&date=04/04/2022&dateRange=weekof&courseAndSection=654:2">1</a>
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="1 Assignments Due" style="cursor:help;font-weight: bold;">
+                                            
+                                            
+                                                <a style="color:#0066CC; font-weight: bold;" href="parents?tab1=studentdata&tab2=gradebook&tab3=listassignments&studentid=24788&action=form&date=04/04/2022&dateRange=weekof&courseAndSection=654:2">1</a>
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                    
+                                
+
+                            </tr>
+
+                            
+                            
+                        
+
+                        
+
+                    
+
+                        
+                        
+                        
+                        
+
+                        
+                        
+
+                        
+
+                        
+
+                            
+                            
+                            
+                            
+
+                            
+                            
+                            
+                            <tr class="listroweven">
+                                <td class="cellLeft" nowrap>
+                                        
+                                        <span class="categorytab" title="Display Assignments for Physical Education 10/Lab (Quarter 3)" onclick="showAssignmentsByMPAndCourse('04/04/2022','927-2:5');">
+                                            <font color="#0000ff"><u>
+                                        
+                                            
+                                             Physical Education 10/Lab (Quarter 3) 
+                                        
+                                            </u></font>
+                                        </span>
+                                        
+                                </td>
+                                <td class="cellLeft" nowrap>
+                                    
+                                    
+                                    
+                                    
+                                        
+                                        
+                                        
+                                            
+                                            
+                                        
+                                        DiNallo, Valerie A
+                                        
+                                            
+                                            
+                                                
+                                                
+                                                    
+                                                        
+                                                        
+                                                    
+                                                
+                                            
+                                            <br>
+                                            
+                                                <b>Email:</b>
+                                                <a href="mailto:dinallov@northernhighlands.org" style="text-decoration:none"><img src="/nohighlands/images/labelIcon.png" alt="" border="0" title="Send e-mail to teacher"></a>
+                                            
+                                        
+                                    
+                                </td>
+                                
+                                
+                                    <td class="cellRight" style="cursor:pointer;">
+                                        
+                                        
+                                        
+                                        
+                                        
+
+                                        
+                                        
+                                        
+                                        
+                                        
+
+                                        
+                                        
+
+                                        
+                                        
+                                        
+
+                                        
+                                        
+                                        
+                                             
+                                        <table cellpadding="0" cellspacing="0" width="100%">
+                                            <tr>
+                                                
+                                                
+                                                    
+                                                    
+                                                        
+                                                        
+                                                            
+                                                            <td width="70%" class="cellRight" style="border:0;color:#0066CC;" title="View Course Summary" onclick="goToCourseSummary('927-2','5');">
+                                                                
+                                                                    <div style="text-decoration: underline">
+                                                                        
+                                                                        98.0%
+                                                                        
+                                                                    </div>
+                                                                
+                                                            </td>
+                                                            <td width="30%" class="cellRight" style="border:0;" onclick="goToCourseSummary('927-2','5');">
+                                                                
+                                                                    A+
+                                                                
+                                                            </td>
+                                                        
+                                                        
+                                                        
+                                                    
+                                                
+                                            </tr>
+                                        </table>
+                                    </td>
+                                
+                                
+                                
+                                
+                                    
+                                    
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="0 Assignments Due" style="cursor:help;opacity:0.5;">
+                                            0
+                                            
+                                        </td>
+                                        
+                                        
+                                        <td class="cellCenter" title="1 Assignments Due" style="cursor:help;font-weight: bold;">
+                                            
+                                            
+                                                <a style="color:#0066CC; font-weight: bold;" href="parents?tab1=studentdata&tab2=gradebook&tab3=listassignments&studentid=24788&action=form&date=04/04/2022&dateRange=weekof&courseAndSection=927-2:5">1</a>
+                                            
+                                        </td>
+                                    
+                                
+
+                            </tr>
+
+                            
+                            
+                        
+
+                        
+
+                    
+
+                </table>
+        
+     </td></tr></table>
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+    function toggleLanguage()
+    {
+        location.href = document.URL + '&toggleLanguage=true';
+    }
+
+    function toggleMobileSite()
+    {
+        location.href = document.URL + '&toggleMobileSite=true';
+    }
+</script>
+
+  <table class="footer" cellpadding="0" cellspacing="0">
+      <tr>
+          <td>
+              <div id="google_translate_element"></div>
+              <script type="text/javascript">
+                    // TODO: If any changes are made to includedLanguages, copy them to parentsFooterMobile.jsp and openRegistration/header.jsp
+
+                  function googleTranslateElementInit() {
+                                  new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element'); }
+              </script>
+              <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+              
+                  
+              
+
+              <a style="margin-left: 10pt;" target="_top" href="javascript:toggleMobileSite();">
+                  Mobile
+              </a>
+          </td>
+          <td style="text-align: right">
+              &copy;Copyright Genesis Educational Services,Inc.
+          </td>
+      </tr>
+  </table>
+
+
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+        
+        
+    
+
+<div style="display:none">
+    <div id="_dialog-confirm_" title="" style="background-color:#FFFFF1">
+        <table>
+            <tr>
+                <td> <img src="/nohighlands/images/help2_48.png" /> </td>
+                <td>
+                    <div id="_confirmDialogText_" >
+
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="_dialog-prompt_" title="" style="background-color:#FFFFF1">
+        <table>
+            <tr>
+                <td> <img src="/nohighlands/images/help2_48.png" /> </td>
+                <td>
+                    <div id="_confirmPromptText_" >
+
+                    </div>
+                    <f2:text nameId="_prompt_dialog_value_" size="50" maxlength="255" value="" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="_dialog-alert_" title="" style="background-color:#FFFFF1">
+        <table>
+            <tr>
+                <td> <img src="/nohighlands/images/info_48.png" /> </td>
+                <td>
+                    <div id="_confirmAlertText_" >
+
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+</html>
